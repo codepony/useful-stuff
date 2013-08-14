@@ -1,0 +1,69 @@
+#!/usr/bin/python
+
+# Protip: want to monitor a thread and download all new images every 5 seconds?
+# while x= 0 ; do 4c [-nf] url; sleep 5; done
+
+import re, urllib, urllib2, argparse, os
+
+parser = argparse.ArgumentParser(description='Downloads all full-size images in one or more arbitrary 4chan threads.')
+
+parser.add_argument('urllist', metavar='url', type=str, nargs='+',
+                   help='the URLs of the threads')
+parser.add_argument('-n', '--newdir', dest='newdir', action='store_true',
+                   help='create a new directory for each thread in the current directory')
+parser.add_argument('-f', '--force', dest='force_redownload', action='store_true',
+                   help='force redownloading every image, overwriting it if it already exists')
+                   
+args = parser.parse_args()
+options = vars(args)
+
+regex = 'href="(\/\/images\.4chan\.org\/[a-z]+\/src\/[0-9]+\.[a-z]+)"'
+
+for url in options['urllist']:
+	print "Thread URL: %s" % url
+	
+	try:
+		page = urllib2.urlopen(url).read()
+	except ValueError:
+		print "That does not look like a valid URL."
+		continue
+	except urllib2.HTTPError:
+		print "The given URL returns a HTTP 404 status code - the thread may have died."
+		continue
+
+	if options['newdir'] == True:
+		thread_id = url.split('/')[-1]
+		target_dir = "%s/" % thread_id
+
+		if not os.path.exists(thread_id):
+			os.makedirs(thread_id)
+	else:
+		target_dir = ""
+
+	search = re.compile(regex)
+	matches = search.finditer(page)
+
+	urls = []
+
+	for match in matches:
+		if match.group(1) not in urls:
+			urls.append(match.group(1))
+
+	current = 1
+	total = len(urls)
+
+	print "  Parsed thread. Total images: %d" % total
+
+	for downloadurl in urls:
+		downloadurl = "http:%s" % downloadurl
+		filename = downloadurl.split('/')[-1]
+		path = target_dir + filename
+		
+		if os.path.exists(path) and options['force_redownload'] == False:
+			print "Skipped existing file %s (%d/%d)." % (filename, current, total)
+		else:
+			urllib.urlretrieve(downloadurl, path)
+			print "Downloaded %s (%d/%d)." % (filename, current, total)
+		current += 1
+	
+	print "Done."
