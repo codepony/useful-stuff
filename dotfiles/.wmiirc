@@ -1,0 +1,14 @@
+MODKEY=Mod4
+
+WMII_FONT="xft:Terminus-7"
+WMII_TERM="urxvtc"
+
+# Setting the background
+feh --bg-scale /home/user/GNULove400dpi.tif &
+
+# Starting terminal-emulator daemon:
+urxvtd &
+# Notification area:
+dunst &
+# Who the hell needs capslock?
+setxkbmap -option caps:escape &
