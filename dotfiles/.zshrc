@@ -10,6 +10,7 @@ ZSH_THEME="ys"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias startx="startx && vlock || vlock"
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -63,4 +64,4 @@ echo "\033[1;33m`curl --silent icanhazip.com`\033[m\n"
 echo "\033[1;31mYour latest typed in commands:\033[m"
 tail -10 $HOME/.zsh_history
 echo "\033[1;31m\nNow have fun using it, $USER!\033[m"
-echo "\033[1;33mYour Privilege score is: <CHECK IT BEFOR USING> - You are PRIVILEGED!\033[m"
+echo "\033[1;33mYour Privilege score is: <CHECK IT BEFORE USING> - You are PRIVILEGED!\033[m"
